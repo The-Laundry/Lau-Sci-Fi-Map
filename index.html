@@ -520,7 +520,7 @@
 
     <input type="hidden" id="input-lat"><input type="hidden" id="input-lng">
     
-    <button class="btn-save" onclick="generateStarCode()">Copy Code</button>
+    <button class="btn-save" onclick="saveSystemToDatabase()">Save to Database</button>
     <button style="background:#333; color:white; border:none; padding:10px; width:100%; margin-top:5px; cursor:pointer; font-family:var(--font-ui);" onclick="closeModal('creator-modal')">Cancel</button>
 </div>
 
@@ -658,35 +658,35 @@
         "Independent": { color: "#95a5a6" },
         "Unclaimed": { color: "#555555" },
         "Equus": { 
-            color: "#4e6c44",
+            color: "#699455",
             names: {
                 "2428": "United Equus", 
                 "2640": "United Equus"
             } 
         },
         "United Systems": { 
-            color: "#943e3f", 
+            color: "#d15454", 
             names: { 
                 "2428": "United Systems Confederacy", 
                 "2640": "United Systems Confederacy",
                 "2695": "United Systems Confederacy"
             } 
         },
-        "Huachavi": { color: "#5b121a" },
+        "Huachavi": { color: "#80151f" },
         "Apleen": {
-            color: "#8c3da6",
+            color: "#c652e7",
             names: {
                 "2428": "Apleen State", 
                 "2640": "Nivaq Republic",
                 "2695": "Nivaq Republic"
             } 
         },
-        "Saventi": { color: "#457a61" },
-        "Sarden": { color: "#1b371e" },
-        "Preservers": { color: "#757778" },
-        "Ichizhou": { color: "#173177" },
+        "Saventi": { color: "#61aa84" },
+        "Sarden": { color: "#254a25" },
+        "Preservers": { color: "#a5a5a5" },
+        "Ichizhou": { color: "#1f42a4" },
         "Solar Empire": { color: "#ad6a22" },
-        "Morden": { color: "#95995c" }
+        "Morden": { color: "#d3d67d" }
     };
     const availableFactions = Object.keys(factionData);
     
@@ -763,7 +763,30 @@
         { name: "Nekmer", coords: [7346, 4641], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Huachavi","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
         { name: "Huecha's Eye", coords: [7503, 4435], type: "major", desc: "Hearth of the Huachavi.", planets: ["Baeko"], history: {"2238":"*Huachavi","2428":"*Huachavi","2640":"*Huachavi","2695":"*Huachavi","2943":"Solar Empire"} },
         { name: "System Zero", coords: [6880, 4576], type: "major", desc: "Origin point of the Preserver Overmind.", planets: ["Reserve"], history: {"2238":"*Preservers","2428":"*Preservers","2640":"*Preservers","2695":"*Preservers","2943":"Solar Empire"} },
+        { name: "Meridian", coords: [6901, 4781], type: "major", desc: "Hearth of the Sarden", planets: ["Meri"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"Unclaimed","3144":"Unclaimed","3921":"Unclaimed"} },
         { name: "Terminus", coords: [7146, 4758], type: "major", desc: "Galactic Capital", planets: ["Terminus"], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","3921":"*"} },
+        { name: "Sjitau", coords: [6882, 4763], type: "major", desc: "", planets: ["Fseyec"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Saal Domi", coords: [7015, 4733], type: "major", desc: "", planets: ["Gtsh-Gtsh"], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Janset", coords: [7026, 4638], type: "major", desc: "", planets: ["Janset III"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Sarden","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Uimen", coords: [6833, 4958], type: "major", desc: "", planets: ["Tigen"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Yitoikia", coords: [6561, 5018], type: "major", desc: "Hearth of the Ichizhou", planets: ["Airehai"], history: {"2238":"*Ichizhou","2428":"*Ichizhou","2640":"*Ichizhou","2695":"*Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Oimesis", coords: [6742, 4919], type: "major", desc: "", planets: ["Osatha"], history: {"2238":"Ichizhou","2428":"Ichizhou","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Dytibao", coords: [6634, 4801], type: "major", desc: "", planets: ["Hana"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Kyomeneos", coords: [6578, 5187], type: "major", desc: "", planets: ["Jadys"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Tiosha", coords: [6394, 5145], type: "major", desc: "", planets: ["Gyomox"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Dacao Tymi", coords: [6350, 4874], type: "major", desc: "", planets: ["Nemliu"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Ikattomeno", coords: [6425, 4748], type: "major", desc: "", planets: ["Ferax"], history: {"2238":"Ichizhou","2428":"Independent","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Detric", coords: [6785, 5708], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Morden","2640":"Morden","2695":"Morden","2943":"Morden","2969":"","3144":"","3921":""} },
+        { name: "Goram", coords: [6751, 5531], type: "major", desc: "Hearth of the Morden", planets: ["Verost"], history: {"2238":"Independent","2428":"*Morden","2640":"*Morden","2695":"*Morden","2943":"*Morden","2969":"","3144":"","3921":""} },
+        { name: "Huaxipec", coords: [7452, 4472], type: "major", desc: "", planets: [], history: {"2238":"Huachavi","2428":"Huachavi","2640":"Huachavi","2695":"Huachavi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Boread", coords: [7215, 4328], type: "major", desc: "", planets: ["Eddenheim"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Thraskir", coords: [7015, 4318], type: "major", desc: "Hearth of the Drak'vorr", planets: ["Drakan"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "61 Cygni", coords: [7513, 5169], type: "major", desc: "", planets: [], history: {"2238":"Saventi","2428":"Saventi","2640":"Saventi","2695":"Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Yhett", coords: [7472, 5334], type: "major", desc: "Hearth of the Saventi.", planets: ["Urilahla"], history: {"2238":"*Saventi","2428":"*Saventi","2640":"*Saventi","2695":"*Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Vega", coords: [7405, 5284], type: "major", desc: "", planets: [], history: {"2238":"Saventi","2428":"Saventi","2640":"Saventi","2695":"Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Aldenaris", coords: [7254, 4020], type: "major", desc: "Hearth of the Vorkai.", planets: ["Vox"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Telyanisk", coords: [7172, 4005], type: "major", desc: "", planets: ["Galloparon"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Novo Abezi", coords: [7054, 3843], type: "major", desc: "", planets: ["Telunu"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
     ];
 
     // Regions
@@ -830,6 +853,7 @@
     const activeMarkers = {};
     let currentEra = "2428";
     let editorMode = false;
+    let editingSystemIndex = -1; // -1 means "New System", otherwise it's the index in the array
 
     // --- 3. UI FUNCTIONS ---
     function updateAllDates(ceYear) {
@@ -1481,33 +1505,67 @@
             navigator.clipboard.writeText(coordString).then(() => showToast(`Coords ${coordString} Copied`));
         }
     });
-    function openStarModal(ll) { document.getElementById('input-lat').value = Math.round(ll.lat); document.getElementById('input-lng').value = Math.round(ll.lng); document.getElementById('creator-modal').style.display = 'block'; map.dragging.disable(); }
+    function openStarModal(ll) {
+        editingSystemIndex = -1; // We are creating a NEW system
+        
+        document.getElementById('input-lat').value = Math.round(ll.lat);
+        document.getElementById('input-lng').value = Math.round(ll.lng);
+        document.getElementById('input-name').value = "";
+        document.getElementById('input-desc').value = "";
+        document.getElementById('p_input').value = "";
+        
+        // Clear eras (Default to empty string, NOT "Unclaimed")
+        ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"].forEach(era => {
+            document.getElementById(`input-${era}`).value = "";
+        });
+
+        document.getElementById('creator-modal').style.display = 'block';
+        document.getElementById('input-name').focus();
+        map.dragging.disable();
+    }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; map.dragging.enable(); }
-    function generateStarCode() {
+    function saveSystemToDatabase() {
         const name = document.getElementById('input-name').value || "Unknown System";
         const desc = document.getElementById('input-desc').value || "";
         const planetsStr = document.getElementById('p_input').value;
         const planets = planetsStr.split(',').map(p => p.trim()).filter(p => p !== '');
         
-        // Gather all eras (Now 8)
-        const h2238 = document.getElementById('input-2238').value || "Unclaimed";
-        const h2428 = document.getElementById('input-2428').value || "Unclaimed";
-        const h2640 = document.getElementById('input-2640').value || "Unclaimed";
-        const h2695 = document.getElementById('input-2695').value || "Unclaimed";
-        const h2943 = document.getElementById('input-2943').value || "Unclaimed";
-        const h2969 = document.getElementById('input-2969').value || "Unclaimed";
-        const h3144 = document.getElementById('input-3144').value || "Unclaimed";
-        const h3921 = document.getElementById('input-3921').value || "Unclaimed";
-        
-        const code = `{ name: "${name}", coords: [${document.getElementById('input-lat').value}, ${document.getElementById('input-lng').value}], type: "${document.getElementById('input-type').value}", desc: "${desc}", planets: ${JSON.stringify(planets)}, history: { "2238": "${h2238}", "2428": "${h2428}", "2640": "${h2640}", "2695": "${h2695}", "2943": "${h2943}", "2969": "${h2969}", "3144": "${h3144}", "3921": "${h3921}" } },`;
-        
-        navigator.clipboard.writeText(code).then(() => {
-            showToast(`"${name}" Copied`);
-            closeModal('creator-modal');
+        // Gather eras. If empty, we SAVE empty string.
+        const history = {};
+        ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"].forEach(era => {
+            history[era] = document.getElementById(`input-${era}`).value.trim(); 
         });
+        
+        const newSystemObj = {
+            name: name,
+            coords: [parseInt(document.getElementById('input-lat').value), parseInt(document.getElementById('input-lng').value)],
+            type: document.getElementById('input-type').value,
+            desc: desc,
+            planets: planets,
+            history: history
+        };
+        
+        if (editingSystemIndex > -1) {
+            // UPDATE existing
+            systems[editingSystemIndex] = newSystemObj;
+            showToast(`Updated ${name}`);
+        } else {
+            // CREATE new
+            systems.push(newSystemObj);
+            showToast(`Created ${name}`);
+        }
+        
+        // Refresh the map and database view immediately
+        updateMap();
+        if (dbOpen) renderDatabaseTable();
+        
+        closeModal('creator-modal');
     }
 
     function loadSystemIntoEditor(sys) {
+        // Find the index of the system we are editing
+        editingSystemIndex = systems.indexOf(sys);
+
         document.getElementById('input-name').value = sys.name;
         document.getElementById('input-lat').value = sys.coords[0];
         document.getElementById('input-lng').value = sys.coords[1];
@@ -1515,17 +1573,11 @@
         document.getElementById('input-desc').value = sys.desc || "";
         document.getElementById('p_input').value = sys.planets ? sys.planets.join(', ') : "";
         
-        // Helper to clear "Unclaimed"
-        const checkVal = (val) => val === "Unclaimed" ? "" : val;
-
-        document.getElementById('input-2238').value = checkVal(sys.history["2238"] || "");
-        document.getElementById('input-2428').value = checkVal(sys.history["2428"] || "");
-        document.getElementById('input-2640').value = checkVal(sys.history["2640"] || "");
-        document.getElementById('input-2695').value = checkVal(sys.history["2695"] || "");
-        document.getElementById('input-2943').value = checkVal(sys.history["2943"] || "");
-        document.getElementById('input-2969').value = checkVal(sys.history["2969"] || "");
-        document.getElementById('input-3144').value = checkVal(sys.history["3144"] || "");
-        document.getElementById('input-3921').value = checkVal(sys.history["3921"] || "");
+        // Load eras. If missing/empty, it stays empty.
+        ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"].forEach(era => {
+            // We use || "" to ensure nulls become empty strings, but we DO NOT force "Unclaimed"
+            document.getElementById(`input-${era}`).value = sys.history[era] || "";
+        });
 
         document.getElementById('creator-modal').style.display = 'block';
         map.dragging.disable();
@@ -1652,9 +1704,8 @@
         input.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                // Determine which modal is active and trigger its save function
                 if (document.getElementById('creator-modal').style.display === 'block') {
-                    generateStarCode();
+                    saveSystemToDatabase(); // Update this line
                 } else if (document.getElementById('faction-modal').style.display === 'block') {
                     generateFactionCode();
                 }
