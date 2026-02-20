@@ -240,6 +240,20 @@
             display: flex; align-items: center; justify-content: center;
             transition: font-size 0.2s ease-out, opacity 0.5s ease-in-out;
         }
+        /* GALACTIC REGION LABELS */
+        .galactic-region-label {
+            font-family: 'Poppins', sans-serif;
+            color: #d3d3e5;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.35em;
+            text-align: center;
+            pointer-events: none;
+            white-space: nowrap;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(0,0,0,1);
+            display: flex; align-items: center; justify-content: center;
+        }
 
         /* LOD Transitions */
         .leaflet-tooltip.star-label { 
@@ -413,6 +427,12 @@
 <div id="search-container">
     <input type="text" id="system-search" placeholder="Locate system or planet..." onkeyup="searchSystems(event)">
     <div id="search-results"></div>
+</div>
+
+<div id="layer-controls" style="position: absolute; top: 80px; right: 25px; z-index: 2000;">
+    <button onclick="toggleGalacticRegions()" style="background: rgba(15, 15, 15, 0.95); border: 1px solid rgba(79, 172, 254, 0.6); color: #4facfe; padding: 8px 12px; cursor: pointer; font-family: var(--font-ui); font-size: 13px; font-weight: bold; border-radius: 4px; transition: 0.2s;">
+        Toggle Sector Overlay
+    </button>
 </div>
 
 <div id="map"></div>
@@ -847,6 +867,30 @@
         { name: "Pantorean<br>Nebula", coords: [7318, 4826], eras: ["2238","2428","2640","2695","2943","2969","3144","3921"] },
     ];
 
+    // Sectors & Galactic Regions
+    const galacticRegionsData = [
+        { name: "Hydian Sector", coords: [6896, 5072] },
+        { name: "Espindek Sector", coords: [8523, 5250] },
+        { name: "Domedeus Sector", coords: [6785, 6764] },
+        { name: "Xichaki Sector", coords: [5704, 6568] },
+        { name: "Quenoriad<br>eSector", coords: [7549, 8084] },
+        { name: "Marnius Sector", coords: [4697, 8117] },
+        { name: "Grand Reaches<br>Sector", coords: [4008, 5736] },
+        { name: "East Rim<br>Sector", coords: [3707, 8568] },
+        { name: "Tzenkia Sector", coords: [3201, 6312] },
+        { name: "Lipec Sector", coords: [2087, 7206] },
+        { name: "Telleria Sector", coords: [2666, 3280] },
+        { name: "Ja'abin<br>Sector", coords: [4669, 3831] },
+        { name: "Don Jakaus Sector", coords: [5029, 2458] },
+        { name: "Pavraeu Sector", coords: [6334, 3257] },
+
+        { name: "Galactic Center", coords: [5046, 5063] },
+        { name: "Magellanic<br>Clouds", coords: [3268, 973] },
+        { name: "Sagittarius Dwarf Galaxy<br>& South Wild Space", coords: [992, 7440] },
+        { name: "Dead Space", coords: [7664, 1928] },
+        { name: "Northeast<br>Wild Space", coords: [9089, 8830] }
+    ];
+
     // --- 2. MAP SETUP ---
     const map = L.map('map', { 
         crs: L.CRS.Simple, 
@@ -881,6 +925,23 @@
         L.imageOverlay('borders_3144.svg', bounds),
         L.imageOverlay('borders_3921.svg', bounds)
     ];
+    const galacticBordersLayer = L.imageOverlay('sector_borders.svg', bounds, {
+        opacity: 0.35, 
+        interactive: false 
+    });
+
+    let isGalacticRegionsVisible = false;
+
+    function toggleGalacticRegions() {
+        isGalacticRegionsVisible = !isGalacticRegionsVisible;
+        
+        if (isGalacticRegionsVisible) {
+            map.addLayer(galacticBordersLayer);
+        } else {
+            map.removeLayer(galacticBordersLayer);
+        }
+        updateMap(); 
+    }
 
     // Add the default layer (Index 1 = 2428) to the map initially
     borderLayers[1].addTo(map);
@@ -1238,6 +1299,41 @@
                     
                     marker.addTo(starLayerGroup);
                 }
+            });
+        }
+
+        // --- UPDATE GALACTIC REGION LABELS ---
+        
+        // Visibility: Only show if the toggle is ON and zoom is very far out
+        const showGalacticLabels = isGalacticRegionsVisible && zoom <= -1;
+
+        // Scaling logic: Starts at 40px at zoom -1, and gets exponentially larger as you zoom out
+        // to stay anchored to the massive regions.
+        let galFontSize = Math.max(10, Math.min(150, 80 * Math.pow(2, zoom)));
+
+        // Cleanup old labels
+        starLayerGroup.eachLayer(layer => {
+            if (layer.options.isGalacticRegion) {
+                starLayerGroup.removeLayer(layer);
+            }
+        });
+
+        if (showGalacticLabels) {
+            galacticRegionsData.forEach(reg => {
+                const galIcon = L.divIcon({
+                    className: 'galactic-region-label',
+                    html: `<div style="font-size:${galFontSize}px;">${reg.name}</div>`,
+                    iconSize: [1200, 300], // Huge bounding box for huge text
+                    iconAnchor: [600, 150] 
+                });
+                
+                const marker = L.marker(reg.coords, { 
+                    icon: galIcon, 
+                    interactive: false, 
+                    isGalacticRegion: true 
+                });
+                
+                marker.addTo(starLayerGroup);
             });
         }
         
