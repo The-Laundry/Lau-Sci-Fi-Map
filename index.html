@@ -429,7 +429,7 @@
     <div id="search-results"></div>
 </div>
 
-<div id="layer-controls" style="position: absolute; top: 80px; right: 25px; z-index: 2000;">
+<div id="layer-controls" style="position: absolute; top: 25px; right: 250px; z-index: 2000;">
     <button onclick="toggleGalacticRegions()" style="background: rgba(15, 15, 15, 0.95); border: 1px solid rgba(79, 172, 254, 0.6); color: #4facfe; padding: 8px 12px; cursor: pointer; font-family: var(--font-ui); font-size: 13px; font-weight: bold; border-radius: 4px; transition: 0.2s;">
         Toggle Sector Overlay
     </button>
@@ -491,6 +491,12 @@
                 <option value="minor">Minor System</option>
                 <option value="major">Major System</option>
             </select>
+        </div>
+        <div style="flex:1;">
+            <label style="font-size:0.8em; color:#0a0;">Sector</label>
+            <select id="input-sector">
+                <option value="">None</option>
+                </select>
         </div>
         <div style="flex:1;">
             <label style="font-size:0.8em; color:#0a0;">Planets</label>
@@ -730,121 +736,121 @@
     
     // Star Systems
     const systems = [
-        { name: "Celestia", coords: [7127, 4630], type: "major", desc: "Hearth of the Equestrian Races.", planets: ["Equus","Luna"], history: {"2238":"Independent","2428":"*Equus","2640":"*Equus","2695":"*Solar Empire","2943":"*Solar Empire"} },
-        { name: "Pegus", coords: [7190, 4520], type: "major", desc: "Mineral rich system.", planets: ["Pegus V"], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Trajon", coords: [7223, 4640], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Unicornis Major", coords: [7089, 4565], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "ρ Celestine", coords: [7270, 4718], type: "major", desc: "", planets: ["Yildun Rest"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Sphenis", coords: [7221, 4717], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "9 Liquorice", coords: [7243, 4738], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Independent","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "ζ Celestine", coords: [7285, 4707], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "β Celestine", coords: [7256, 4696], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Maw of Tartarus", coords: [7252, 4771], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "α Beakules", coords: [7195, 4674], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "β Beakules", coords: [7188, 4691], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Iona", coords: [7155, 4681], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Furud", coords: [7180, 4613], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Zampele", coords: [7099, 4668], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Unicornis Minor", coords: [7116, 4558], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Ursus Minor", coords: [7157, 4539], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Nova Sol", coords: [7156, 4925], type: "major", desc: "Adopted home system of Humankind.", planets: ["Terra Astra"], history: {"2238":"Unclaimed","2428":"*United Systems","2640":"*United Systems","2695":"*United Systems","2943":"Solar Empire"} },
-        { name: "Colchis", coords: [7205, 4833], type: "major", desc: "", planets: ["Medea"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "β Hydia", coords: [7104, 4973], type: "major", desc: "", planets: ["Hafalsama"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "δ Hydia", coords: [7132, 5013], type: "major", desc: "", planets: ["Halcyon"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "α Hydia", coords: [7161, 5089], type: "major", desc: "", planets: ["Mashu"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Sol", coords: [7517, 5022], type: "major", desc: "Original hearth of Humankind.", planets: ["Earth","Mars","Jovian Moons","Titan"], history: {"2238":"*United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Prestor", coords: [7140, 4869], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Fomalhaut", coords: [7391, 5060], type: "major", desc: "", planets: ["Skagmore","Abensha"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "ε Indi", coords: [7425, 4979], type: "major", desc: "", planets: ["Indira"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "τ Ceti", coords: [7558, 5025], type: "major", desc: "", planets: ["Camelot"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "α Centauri", coords: [7477, 4994], type: "major", desc: "", planets: ["Proxima"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Ran", coords: [7598, 4992], type: "major", desc: "", planets: ["Yibbena"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Keid", coords: [7661, 4967], type: "major", desc: "", planets: ["Ophirion"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Procyon", coords: [7631, 4937], type: "major", desc: "", planets: ["Coriter"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Sirius", coords: [7588, 4943], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Tet 19", coords: [7542, 4892], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Wolf 359", coords: [7517, 4974], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Barnard's Star", coords: [7477, 5064], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Elnath", coords: [7542, 5086], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Groombridge 34", coords: [7589, 5113], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Fairbanks 6", coords: [7630, 5113], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Canopus", coords: [7384, 5006], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Altair", coords: [7414, 5162], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Okab", coords: [7372, 5141], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Regulus", coords: [7327, 5085], type: "minor", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "12 Ophiuchi", coords: [7281, 5126], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Sacoren's Star", coords: [7224, 5152], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Pleasanton", coords: [7090, 5017], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Buzhou", coords: [7056, 4924], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "19 Hamnoris", coords: [7086, 4863], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "σ Pavo", coords: [7170, 4929], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Lemnos", coords: [7197, 4871], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Iolcos", coords: [7188, 4827], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Cyzicus", coords: [7213, 4816], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Tritonis", coords: [7229, 4853], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
-        { name: "Uq", coords: [7245, 5001], type: "major", desc: "", planets: ["Uq Prime"], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Caren", coords: [7482, 4715], type: "major", desc: "Hearth of the Apleen.", planets: ["Nunar"], history: {"2238":"*Apleen","2428":"*Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Kitlun", coords: [7430, 4742], type: "major", desc: "", planets: ["Nivaq"], history: {"2238":"Apleen","2428":"Apleen","2640":"*Apleen","2695":"*Apleen","2943":"Solar Empire"} },
-        { name: "Bomor", coords: [7423, 4669], type: "major", desc: "", planets: ["Bomor Prime"], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Scravin", coords: [7477, 4624], type: "major", desc: "", planets: ["Scravin Prime"], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Ilzareth", coords: [7517, 4678], type: "major", desc: "Hearth of the Mekuun.", planets: ["Yunai"], history: {"2238":"Independent","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Higa", coords: [7531, 4741], type: "major", desc: "", planets: [], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Scesi", coords: [7334, 4769], type: "major", desc: "", planets: ["Scesi Prime"], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Antin", coords: [7549, 4607], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Nawin", coords: [7474, 4841], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Derazi", coords: [7386, 4852], type: "minor", desc: "", planets: [], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Komis", coords: [7345, 4907], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Teqo", coords: [7282, 4928], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Gared", coords: [7324, 5009], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Horzen", coords: [7224, 4958], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Samplennor", coords: [7213, 5021], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
-        { name: "Nekmer", coords: [7346, 4641], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Huachavi","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
-        { name: "Huecha's Eye", coords: [7503, 4435], type: "major", desc: "Hearth of the Huachavi.", planets: ["Baeko"], history: {"2238":"*Huachavi","2428":"*Huachavi","2640":"*Huachavi","2695":"*Huachavi","2943":"Solar Empire"} },
-        { name: "System Zero", coords: [6880, 4576], type: "major", desc: "Origin point of the Preserver Overmind.", planets: ["Reserve"], history: {"2238":"*Preservers","2428":"*Preservers","2640":"*Preservers","2695":"*Preservers","2943":"Solar Empire"} },
-        { name: "Meridian", coords: [6901, 4781], type: "major", desc: "Hearth of the Sarden", planets: ["Meri"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"Unclaimed","3144":"Unclaimed","3921":"Unclaimed"} },
-        { name: "Terminus", coords: [7146, 4758], type: "major", desc: "Galactic Capital", planets: ["Terminus"], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","3921":"*"} },
-        { name: "Sjitau", coords: [6882, 4763], type: "major", desc: "", planets: ["Fseyec"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Saal Domi", coords: [7015, 4733], type: "major", desc: "", planets: ["Gtsh-Gtsh"], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Janset", coords: [7026, 4638], type: "major", desc: "", planets: ["Janset III"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Sarden","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Uimen", coords: [6833, 4958], type: "major", desc: "", planets: ["Tigen"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Yitoikia", coords: [6561, 5018], type: "major", desc: "Hearth of the Ichizhou", planets: ["Airehai"], history: {"2238":"*Ichizhou","2428":"*Ichizhou","2640":"*Ichizhou","2695":"*Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Oimesis", coords: [6742, 4919], type: "major", desc: "", planets: ["Osatha"], history: {"2238":"Ichizhou","2428":"Ichizhou","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Dytibao", coords: [6634, 4801], type: "major", desc: "", planets: ["Hana"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Kyomeneos", coords: [6578, 5187], type: "major", desc: "", planets: ["Jadys"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Tiosha", coords: [6394, 5145], type: "major", desc: "", planets: ["Gyomox"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Dacao Tymi", coords: [6350, 4874], type: "major", desc: "", planets: ["Nemliu"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Ikattomeno", coords: [6425, 4748], type: "major", desc: "", planets: ["Ferax"], history: {"2238":"Ichizhou","2428":"Independent","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Detric", coords: [6785, 5708], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Morden","2640":"Morden","2695":"Morden","2943":"Morden","2969":"","3144":"","3921":""} },
-        { name: "Goram", coords: [6751, 5531], type: "major", desc: "Hearth of the Morden", planets: ["Verost"], history: {"2238":"Independent","2428":"*Morden","2640":"*Morden","2695":"*Morden","2943":"*Morden","2969":"","3144":"","3921":""} },
-        { name: "Huaxipec", coords: [7452, 4472], type: "major", desc: "", planets: [], history: {"2238":"Huachavi","2428":"Huachavi","2640":"Huachavi","2695":"Huachavi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Boread", coords: [7215, 4328], type: "major", desc: "", planets: ["Eddenheim"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Thraskir", coords: [7015, 4318], type: "major", desc: "Hearth of the Drak'vorr", planets: ["Drakan"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "61 Cygni", coords: [7513, 5169], type: "major", desc: "", planets: [], history: {"2238":"Saventi","2428":"Saventi","2640":"Saventi","2695":"Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Yhett", coords: [7472, 5334], type: "major", desc: "Hearth of the Saventi.", planets: ["Urilahla"], history: {"2238":"*Saventi","2428":"*Saventi","2640":"*Saventi","2695":"*Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Vega", coords: [7405, 5284], type: "major", desc: "", planets: [], history: {"2238":"Saventi","2428":"Saventi","2640":"Saventi","2695":"Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Aldenaris", coords: [7254, 4020], type: "major", desc: "Hearth of the Vorkai.", planets: ["Vox"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Telyanisk", coords: [7172, 4005], type: "major", desc: "", planets: ["Galloparon"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Novo Abezi", coords: [7054, 3843], type: "major", desc: "", planets: ["Telunu"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Jericho", coords: [7109, 6760], type: "major", desc: "Adopted hearth of the Archeri", planets: ["Archer"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
-        { name: "Ordo Ibani", coords: [7034, 6710], type: "major", desc: "", planets: ["Domedia"], history: {"2238":"","2428":"*Domedeus Alliance","2640":"*Domedeus Alliance","2695":"*Domedeus Alliance","2943":"*Domedeus Alliance","2969":"*Domedeus Alliance","3144":"","3921":""} },
-        { name: "Jalin Nigh", coords: [7217, 6688], type: "major", desc: "Hearth of the Krev.", planets: ["Lopalla"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"Domedeus Alliance","3144":"","3921":""} },
-        { name: "Ordo Polis", coords: [6988, 6620], type: "major", desc: "Hearth of the Undili.", planets: ["Galenor"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
-        { name: "Din'kalb", coords: [7118, 6830], type: "major", desc: "", planets: [], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
-        { name: "Adan", coords: [7092, 6506], type: "major", desc: "", planets: [], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"Domedeus Alliance","3144":"","3921":""} },
-        { name: "Khelathar", coords: [7851, 6042], type: "major", desc: "", planets: ["Tarvath"], history: {"2238":"*Tarvathian","2428":"*Tarvathian","2640":"*Tarvathian","2695":"*Tarvathian","2943":"Solar Empire","2969":"Tarvathian","3144":"","3921":""} },
-        { name: "Sprinkle's Star", coords: [7075, 4412], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Htash", coords: [7039, 4753], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "32 Hamnoris", coords: [7092, 4803], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Dep Hydia", coords: [6913, 5141], type: "major", desc: "Republic-era Depot System.", planets: [], history: {"2238":"","2428":"","2640":"","2695":"","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Dep Domedia", coords: [7235, 6463], type: "major", desc: "Republic-era Depot System.", planets: [], history: {"2238":"Unclaimed","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"","3144":"","3921":""} },
-        { name: "Ob Amban", coords: [6784, 7487], type: "major", desc: "Hearth of the Reavers", planets: ["Amnorex"], history: {"2238":"Reavers","2428":"Reavers","2640":"Reavers","2695":"Reavers","2943":"Reavers","2969":"","3144":"","3921":""} },
-        { name: "Fenekar", coords: [6521, 6640], type: "major", desc: "", planets: ["Cidaron"], history: {"2238":"","2428":"Frevon","2640":"Frevon","2695":"Frevon","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Ascallis", coords: [6839, 6191], type: "major", desc: "Hearth of the Scallois.", planets: ["Luscine"], history: {"2238":"Independent","2428":"*Scallois","2640":"*Scallois","2695":"*Scallois","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Veloris", coords: [6651, 6261], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Scallois","2640":"Scallois","2695":"Scallois","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Siralis", coords: [6954, 6077], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Scallois","2695":"Scallois","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Dralos", coords: [6425, 6341], type: "major", desc: "Hearth of the Dral.", planets: ["Dran"], history: {"2238":"*Dral","2428":"*Dral","2640":"*Dral","2695":"*Dral","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Vorgas", coords: [6322, 6320], type: "major", desc: "", planets: [], history: {"2238":"Dral","2428":"Dral","2640":"Dral","2695":"Dral","2943":"","2969":"","3144":"","3921":""} },
-        { name: "Keldar", coords: [6370, 6546], type: "major", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Dral","2640":"Dral","2695":"Dral","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Celestia", coords: [7127, 4630], type: "major", sector: "Hydian Sector", desc: "Hearth of the Equestrian Races.", planets: ["Equus","Luna"], history: {"2238":"Independent","2428":"*Equus","2640":"*Equus","2695":"*Solar Empire","2943":"*Solar Empire"} },
+        { name: "Pegus", coords: [7190, 4520], type: "major", sector: "Hydian Sector", desc: "Mineral rich system.", planets: ["Pegus V"], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Trajon", coords: [7223, 4640], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Unicornis Major", coords: [7089, 4565], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "ρ Celestine", coords: [7270, 4718], type: "major", sector: "Hydian Sector", desc: "", planets: ["Yildun Rest"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Sphenis", coords: [7221, 4717], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "9 Liquorice", coords: [7243, 4738], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Independent","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "ζ Celestine", coords: [7285, 4707], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "β Celestine", coords: [7256, 4696], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Maw of Tartarus", coords: [7252, 4771], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "α Beakules", coords: [7195, 4674], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "β Beakules", coords: [7188, 4691], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Iona", coords: [7155, 4681], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Furud", coords: [7180, 4613], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Zampele", coords: [7099, 4668], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Unicornis Minor", coords: [7116, 4558], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Ursus Minor", coords: [7157, 4539], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Nova Sol", coords: [7156, 4925], type: "major", sector: "Hydian Sector", desc: "Adopted home system of Humankind.", planets: ["Terra Astra"], history: {"2238":"Unclaimed","2428":"*United Systems","2640":"*United Systems","2695":"*United Systems","2943":"Solar Empire"} },
+        { name: "Colchis", coords: [7205, 4833], type: "major", sector: "Hydian Sector", desc: "", planets: ["Medea"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "β Hydia", coords: [7104, 4973], type: "major", sector: "Hydian Sector", desc: "", planets: ["Hafalsama"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "δ Hydia", coords: [7132, 5013], type: "major", sector: "Hydian Sector", desc: "", planets: ["Halcyon"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "α Hydia", coords: [7161, 5089], type: "major", sector: "Hydian Sector", desc: "", planets: ["Mashu"], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Sol", coords: [7517, 5022], type: "major", sector: "Hydian Sector", desc: "Original hearth of Humankind.", planets: ["Earth","Mars","Jovian Moons","Titan"], history: {"2238":"*United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Prestor", coords: [7140, 4869], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Fomalhaut", coords: [7391, 5060], type: "major", sector: "Hydian Sector", desc: "", planets: ["Skagmore","Abensha"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "ε Indi", coords: [7425, 4979], type: "major", sector: "Hydian Sector", desc: "", planets: ["Indira"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "τ Ceti", coords: [7558, 5025], type: "major", sector: "Hydian Sector", desc: "", planets: ["Camelot"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "α Centauri", coords: [7477, 4994], type: "major", sector: "Hydian Sector", desc: "", planets: ["Proxima"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Ran", coords: [7598, 4992], type: "major", sector: "Hydian Sector", desc: "", planets: ["Yibbena"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Keid", coords: [7661, 4967], type: "major", sector: "Hydian Sector", desc: "", planets: ["Ophirion"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Procyon", coords: [7631, 4937], type: "major", sector: "Hydian Sector", desc: "", planets: ["Coriter"], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Sirius", coords: [7588, 4943], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Tet 19", coords: [7542, 4892], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Wolf 359", coords: [7517, 4974], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Barnard's Star", coords: [7477, 5064], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Elnath", coords: [7542, 5086], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Groombridge 34", coords: [7589, 5113], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Fairbanks 6", coords: [7630, 5113], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Canopus", coords: [7384, 5006], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Altair", coords: [7414, 5162], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Okab", coords: [7372, 5141], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Regulus", coords: [7327, 5085], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"United Systems","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "12 Ophiuchi", coords: [7281, 5126], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Sacoren's Star", coords: [7224, 5152], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Pleasanton", coords: [7090, 5017], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Buzhou", coords: [7056, 4924], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "19 Hamnoris", coords: [7086, 4863], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "σ Pavo", coords: [7170, 4929], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Lemnos", coords: [7197, 4871], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Iolcos", coords: [7188, 4827], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Cyzicus", coords: [7213, 4816], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Tritonis", coords: [7229, 4853], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"United Systems","2640":"United Systems","2695":"United Systems","2943":"Solar Empire"} },
+        { name: "Uq", coords: [7245, 5001], type: "major", sector: "Hydian Sector", desc: "", planets: ["Uq Prime"], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Caren", coords: [7482, 4715], type: "major", sector: "Hydian Sector", desc: "Hearth of the Apleen.", planets: ["Nunar"], history: {"2238":"*Apleen","2428":"*Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Kitlun", coords: [7430, 4742], type: "major", sector: "Hydian Sector", desc: "", planets: ["Nivaq"], history: {"2238":"Apleen","2428":"Apleen","2640":"*Apleen","2695":"*Apleen","2943":"Solar Empire"} },
+        { name: "Bomor", coords: [7423, 4669], type: "major", sector: "Hydian Sector", desc: "", planets: ["Bomor Prime"], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Scravin", coords: [7477, 4624], type: "major", sector: "Hydian Sector", desc: "", planets: ["Scravin Prime"], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Ilzareth", coords: [7517, 4678], type: "major", sector: "Hydian Sector", desc: "Hearth of the Mekuun.", planets: ["Yunai"], history: {"2238":"Independent","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Higa", coords: [7531, 4741], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Scesi", coords: [7334, 4769], type: "major", sector: "Hydian Sector", desc: "", planets: ["Scesi Prime"], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Antin", coords: [7549, 4607], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Nawin", coords: [7474, 4841], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Derazi", coords: [7386, 4852], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Apleen","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Komis", coords: [7345, 4907], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Teqo", coords: [7282, 4928], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Gared", coords: [7324, 5009], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Horzen", coords: [7224, 4958], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Samplennor", coords: [7213, 5021], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Apleen","2640":"Apleen","2695":"Apleen","2943":"Solar Empire"} },
+        { name: "Nekmer", coords: [7346, 4641], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Huachavi","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire"} },
+        { name: "Huecha's Eye", coords: [7503, 4435], type: "major", sector: "Hydian Sector", desc: "Hearth of the Huachavi.", planets: ["Baeko"], history: {"2238":"*Huachavi","2428":"*Huachavi","2640":"*Huachavi","2695":"*Huachavi","2943":"Solar Empire"} },
+        { name: "System Zero", coords: [6880, 4576], type: "major", sector: "Hydian Sector", desc: "Origin point of the Preserver Overmind.", planets: ["Reserve"], history: {"2238":"*Preservers","2428":"*Preservers","2640":"*Preservers","2695":"*Preservers","2943":"Solar Empire"} },
+        { name: "Meridian", coords: [6901, 4781], type: "major", sector: "Hydian Sector", desc: "Hearth of the Sarden", planets: ["Meri"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"Unclaimed","3144":"Unclaimed","3921":"Unclaimed"} },
+        { name: "Terminus", coords: [7146, 4758], type: "major", sector: "Hydian Sector", desc: "Galactic Capital", planets: ["Terminus"], history: {"2238":"Unclaimed","2428":"Equus","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","3921":"*"} },
+        { name: "Sjitau", coords: [6882, 4763], type: "major", sector: "Hydian Sector", desc: "", planets: ["Fseyec"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Saal Domi", coords: [7015, 4733], type: "major", sector: "Hydian Sector", desc: "", planets: ["Gtsh-Gtsh"], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Janset", coords: [7026, 4638], type: "major", sector: "Hydian Sector", desc: "", planets: ["Janset III"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Sarden","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Uimen", coords: [6833, 4958], type: "major", sector: "Hydian Sector", desc: "", planets: ["Tigen"], history: {"2238":"Ichizhou","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Yitoikia", coords: [6561, 5018], type: "major", sector: "Hydian Sector", desc: "Hearth of the Ichizhou", planets: ["Airehai"], history: {"2238":"*Ichizhou","2428":"*Ichizhou","2640":"*Ichizhou","2695":"*Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Oimesis", coords: [6742, 4919], type: "major", sector: "Hydian Sector", desc: "", planets: ["Osatha"], history: {"2238":"Ichizhou","2428":"Ichizhou","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Dytibao", coords: [6634, 4801], type: "major", sector: "Hydian Sector", desc: "", planets: ["Hana"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Kyomeneos", coords: [6578, 5187], type: "major", sector: "Hydian Sector", desc: "", planets: ["Jadys"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Tiosha", coords: [6394, 5145], type: "major", sector: "Hydian Sector", desc: "", planets: ["Gyomox"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Dacao Tymi", coords: [6350, 4874], type: "major", sector: "Hydian Sector", desc: "", planets: ["Nemliu"], history: {"2238":"Ichizhou","2428":"","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Ikattomeno", coords: [6425, 4748], type: "major", sector: "Hydian Sector", desc: "", planets: ["Ferax"], history: {"2238":"Ichizhou","2428":"Independent","2640":"Ichizhou","2695":"Ichizhou","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Detric", coords: [6785, 5708], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Morden","2640":"Morden","2695":"Morden","2943":"Morden","2969":"","3144":"","3921":""} },
+        { name: "Goram", coords: [6751, 5531], type: "major", sector: "Hydian Sector", desc: "Hearth of the Morden", planets: ["Verost"], history: {"2238":"Independent","2428":"*Morden","2640":"*Morden","2695":"*Morden","2943":"*Morden","2969":"","3144":"","3921":""} },
+        { name: "Huaxipec", coords: [7452, 4472], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Huachavi","2428":"Huachavi","2640":"Huachavi","2695":"Huachavi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Boread", coords: [7215, 4328], type: "major", sector: "Hydian Sector", desc: "", planets: ["Eddenheim"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Thraskir", coords: [7015, 4318], type: "major", sector: "Hydian Sector", desc: "Hearth of the Drak'vorr", planets: ["Drakan"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "61 Cygni", coords: [7513, 5169], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Saventi","2428":"Saventi","2640":"Saventi","2695":"Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Yhett", coords: [7472, 5334], type: "major", sector: "Hydian Sector", desc: "Hearth of the Saventi.", planets: ["Urilahla"], history: {"2238":"*Saventi","2428":"*Saventi","2640":"*Saventi","2695":"*Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Vega", coords: [7405, 5284], type: "major", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Saventi","2428":"Saventi","2640":"Saventi","2695":"Saventi","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Aldenaris", coords: [7254, 4020], type: "major", sector: "Hydian Sector", desc: "Hearth of the Vorkai.", planets: ["Vox"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Telyanisk", coords: [7172, 4005], type: "major", sector: "Hydian Sector", desc: "", planets: ["Galloparon"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Novo Abezi", coords: [7054, 3843], type: "major", sector: "Hydian Sector", desc: "", planets: ["Telunu"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Jericho", coords: [7109, 6760], type: "major", sector: "Domedeus Sector", desc: "Adopted hearth of the Archeri", planets: ["Archer"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Ordo Ibani", coords: [7034, 6710], type: "major", sector: "Domedeus Sector", desc: "", planets: ["Domedia"], history: {"2238":"","2428":"*Domedeus Alliance","2640":"*Domedeus Alliance","2695":"*Domedeus Alliance","2943":"*Domedeus Alliance","2969":"*Domedeus Alliance","3144":"","3921":""} },
+        { name: "Jalin Nigh", coords: [7217, 6688], type: "major", sector: "Domedeus Sector", desc: "Hearth of the Krev.", planets: ["Lopalla"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Ordo Polis", coords: [6988, 6620], type: "major", sector: "Domedeus Sector", desc: "Hearth of the Undili.", planets: ["Galenor"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Din'kalb", coords: [7118, 6830], type: "major", sector: "Domedeus Sector", desc: "Hearth of the", planets: ["Ik’tuluktktk"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Adan", coords: [7092, 6506], type: "major", sector: "Domedeus Sector", desc: "Hearth of the", planets: ["Shevanna"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Khelathar", coords: [7851, 6042], type: "major", sector: "Espindek Sector", desc: "", planets: ["Tarvath"], history: {"2238":"*Tarvathian","2428":"*Tarvathian","2640":"*Tarvathian","2695":"*Tarvathian","2943":"Solar Empire","2969":"Tarvathian","3144":"","3921":""} },
+        { name: "Sprinkle's Star", coords: [7075, 4412], type: "minor", sector: "Domedeus Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Htash", coords: [7039, 4753], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "32 Hamnoris", coords: [7092, 4803], type: "minor", sector: "Hydian Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Dep Hydia", coords: [6913, 5141], type: "major", sector: "Hydian Sector", desc: "Republic-era Depot System.", planets: [], history: {"2238":"","2428":"","2640":"","2695":"","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Dep Domedia", coords: [7235, 6463], type: "major", sector: "Domedeus Sector", desc: "Republic-era Depot System.", planets: [], history: {"2238":"Unclaimed","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Ob Amban", coords: [6784, 7487], type: "major", sector: "Domedeus Sector", desc: "Hearth of the Reavers", planets: ["Amnorex"], history: {"2238":"Reavers","2428":"Reavers","2640":"Reavers","2695":"Reavers","2943":"Reavers","2969":"","3144":"","3921":""} },
+        { name: "Fenekar", coords: [6521, 6640], type: "major", sector: "Domedeus Sector", desc: "", planets: ["Cidaron"], history: {"2238":"","2428":"Frevon","2640":"Frevon","2695":"Frevon","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Ascallis", coords: [6839, 6191], type: "major", sector: "Domedeus Sector", desc: "Hearth of the Scallois.", planets: ["Luscine"], history: {"2238":"Independent","2428":"*Scallois","2640":"*Scallois","2695":"*Scallois","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Veloris", coords: [6651, 6261], type: "major", sector: "Domedeus Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Scallois","2640":"Scallois","2695":"Scallois","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Siralis", coords: [6954, 6077], type: "major", sector: "Domedeus Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Scallois","2695":"Scallois","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Dralos", coords: [6425, 6341], type: "major", sector: "Domedeus Sector", desc: "Hearth of the Dral.", planets: ["Dran"], history: {"2238":"*Dral","2428":"*Dral","2640":"*Dral","2695":"*Dral","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Vorgas", coords: [6322, 6320], type: "major", sector: "Domedeus Sector", desc: "", planets: [], history: {"2238":"Dral","2428":"Dral","2640":"Dral","2695":"Dral","2943":"","2969":"","3144":"","3921":""} },
+        { name: "Keldar", coords: [6370, 6546], type: "major", sector: "Domedeus Sector", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Dral","2640":"Dral","2695":"Dral","2943":"","2969":"","3144":"","3921":""} },
     ];
 
     // Regions
@@ -873,7 +879,7 @@
         { name: "Espindek Sector", coords: [8523, 5250] },
         { name: "Domedeus Sector", coords: [6785, 6764] },
         { name: "Xichaki Sector", coords: [5704, 6568] },
-        { name: "Quenoriad<br>eSector", coords: [7549, 8084] },
+        { name: "Quenoriad<br>Sector", coords: [7549, 8084] },
         { name: "Marnius Sector", coords: [4697, 8117] },
         { name: "Grand Reaches<br>Sector", coords: [4008, 5736] },
         { name: "East Rim<br>Sector", coords: [3707, 8568] },
@@ -1184,8 +1190,12 @@
                     const systemDesc = sys.desc && sys.desc.trim() !== "" ? sys.desc : "No additional data recorded for this system.";
                     let pml = (sys.planets && sys.planets.length > 0) ? `<div style="margin-top:8px; border-top:1px solid #444; padding-top:5px;"><strong class="planet-header">PLANETS:</strong><ul class="planet-list">${sys.planets.map(p=>`<li>${p}</li>`).join('')}</ul></div>` : '';
 
-                    // NEW: Popup uses 'displayName' (e.g. Confederacy)
-                    marker.bindPopup(`<div class="popup-header">${translatedName}</div><div class="popup-desc">${systemDesc}</div><div style="margin-top:5px;"><span class="popup-meta-label">Owner (${currentEra} CE):</span> <span class="popup-faction-name" style="color:${color};">${displayName}</span>${isCapital ? ' <span style="color:#ffd700; font-size:10px;">★ CAPITAL</span>' : ''}</div>${pml}`);
+                    // Determine the layout for the sector subtitle
+                    const cleanSector = sys.sector ? sys.sector.replace(/<br\s*\/?>/gi, ' ') : '';
+                    const sectorHtml = cleanSector ? `<div style="font-size: 0.85em; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: -2px; padding-bottom: 5px;">${cleanSector}</div>` : `<div style="padding-bottom: 5px;"></div>`;
+
+                    // Update the popup HTML
+                    marker.bindPopup(`<div class="popup-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 2px;">${translatedName}</div>${sectorHtml}<div style="border-bottom: 1px solid #444; margin-bottom: 5px;"></div><div class="popup-desc">${systemDesc}</div><div style="margin-top:5px;"><span class="popup-meta-label">Owner (${currentEra} CE):</span> <span class="popup-faction-name" style="color:${color};">${displayName}</span>${isCapital ? ' <span style="color:#ffd700; font-size:10px;">★ CAPITAL</span>' : ''}</div>${pml}`);
                     
                     // Determine Label Class
                     let labelClass = 'label-minor';
@@ -1219,7 +1229,7 @@
         // Visibility Range: 
         // Visible from Zoom -2 (far out) up to Zoom 2 (close in).
         // Adjust '2' to a lower number (like 1.5) if you want them to disappear sooner when zooming in.
-        const showRegions = zoom >= -2 && zoom <= 2;
+        const showRegions = zoom >= -1 && zoom <= 2;
 
         // SCALING LOGIC (Hybrid):
         // 1. Math.pow(2, zoom): Shrinks text when zooming out (prevents overlap).
@@ -1355,7 +1365,23 @@
     };
     let currentEraIndex = 1; 
     let activeCalendar = 'CE';
-    let isDraggingTimeline = false; 
+    let isDraggingTimeline = false;
+
+    // Sector Name Cleanup
+    function refreshSectorDropdowns() {
+        const sectorSelect = document.getElementById('input-sector');
+        if (!sectorSelect) return;
+        
+        sectorSelect.innerHTML = '<option value="">None</option>';
+        galacticRegionsData.forEach(reg => {
+            // Keep the line break stripper just in case you use them here too
+            const cleanName = reg.name.replace(/<br\s*\/?>/gi, ' ');
+            const opt = document.createElement('option');
+            opt.value = cleanName;
+            opt.textContent = cleanName;
+            sectorSelect.appendChild(opt);
+        });
+    }
 
     // Configuration with Full Names vs Abbreviations
     const calendarConfig = {
@@ -1582,6 +1608,9 @@
         if (e.key.toLowerCase() === 'n' && !['INPUT','TEXTAREA'].includes(tagName)) {
             nKeyDown = true;
         }
+        if (e.key.toLowerCase() === 'r' && !e.shiftKey && !isInput && !isModalOpen()) {
+            toggleGalacticRegions();
+        }
     });
 
     // Track 'R' key state for the Shift+R+Click shortcut
@@ -1640,15 +1669,14 @@
         }
     });
     function openStarModal(ll) {
-        editingSystemIndex = -1; // We are creating a NEW system
-        
+        editingSystemIndex = -1; 
         document.getElementById('input-lat').value = Math.round(ll.lat);
         document.getElementById('input-lng').value = Math.round(ll.lng);
         document.getElementById('input-name').value = "";
+        document.getElementById('input-sector').value = "";
         document.getElementById('input-desc').value = "";
         document.getElementById('p_input').value = "";
         
-        // Clear eras (Default to empty string, NOT "Unclaimed")
         ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"].forEach(era => {
             document.getElementById(`input-${era}`).value = "";
         });
@@ -1661,10 +1689,10 @@
     function saveSystemToDatabase() {
         const name = document.getElementById('input-name').value || "Unknown System";
         const desc = document.getElementById('input-desc').value || "";
+        const sector = document.getElementById('input-sector').value || "";
         const planetsStr = document.getElementById('p_input').value;
         const planets = planetsStr.split(',').map(p => p.trim()).filter(p => p !== '');
         
-        // Gather eras. If empty, we SAVE empty string.
         const history = {};
         ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"].forEach(era => {
             history[era] = document.getElementById(`input-${era}`).value.trim(); 
@@ -1674,42 +1702,36 @@
             name: name,
             coords: [parseInt(document.getElementById('input-lat').value), parseInt(document.getElementById('input-lng').value)],
             type: document.getElementById('input-type').value,
+            sector: sector,
             desc: desc,
             planets: planets,
             history: history
         };
         
         if (editingSystemIndex > -1) {
-            // UPDATE existing
             systems[editingSystemIndex] = newSystemObj;
             showToast(`Updated ${name}`);
         } else {
-            // CREATE new
             systems.push(newSystemObj);
             showToast(`Created ${name}`);
         }
         
-        // Refresh the map and database view immediately
         updateMap();
         if (dbOpen) renderDatabaseTable();
-        
         closeModal('creator-modal');
     }
 
     function loadSystemIntoEditor(sys) {
-        // Find the index of the system we are editing
         editingSystemIndex = systems.indexOf(sys);
-
         document.getElementById('input-name').value = sys.name;
         document.getElementById('input-lat').value = sys.coords[0];
         document.getElementById('input-lng').value = sys.coords[1];
         document.getElementById('input-type').value = sys.type;
+        document.getElementById('input-sector').value = sys.sector || "";
         document.getElementById('input-desc').value = sys.desc || "";
         document.getElementById('p_input').value = sys.planets ? sys.planets.join(', ') : "";
         
-        // Load eras. If missing/empty, it stays empty.
         ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"].forEach(era => {
-            // We use || "" to ensure nulls become empty strings, but we DO NOT force "Unclaimed"
             document.getElementById(`input-${era}`).value = sys.history[era] || "";
         });
 
@@ -1939,10 +1961,10 @@
         }
     }
 
-    // --- RENDERERS ---
+    // --- RENDERERS ---g
 
     function renderSystemsTable(thead, tbody) {
-        thead.innerHTML = `<tr><th class="col-med">Name</th><th class="col-tiny">X</th><th class="col-tiny">Y</th><th class="col-small">Type</th><th class="col-wide">Description</th><th class="col-wide">Planets</th><th class="col-med">2238 Owner</th><th class="col-med">2428 Owner</th><th class="col-med">2640 Owner</th><th class="col-med">2695 Owner</th><th class="col-med">2943 Owner</th><th class="col-med">2969 Owner</th><th class="col-med">3144 Owner</th><th class="col-med">3921 Owner</th><th class="col-tiny">Actions</th></tr>`;
+        thead.innerHTML = `<tr><th class="col-med">Name</th><th class="col-tiny">X</th><th class="col-tiny">Y</th><th class="col-small">Type</th><th class="col-small">Sector</th><th class="col-wide">Description</th><th class="col-wide">Planets</th><th class="col-med">2238 Owner</th><th class="col-med">2428 Owner</th><th class="col-med">2640 Owner</th><th class="col-med">2695 Owner</th><th class="col-med">2943 Owner</th><th class="col-med">2969 Owner</th><th class="col-med">3144 Owner</th><th class="col-med">3921 Owner</th><th class="col-tiny">Actions</th></tr>`;
         const checkVal = (val) => (val === 'Unclaimed' || !val) ? '' : val;
         systems.forEach((sys, index) => {
             const row = document.createElement('tr');
@@ -1951,6 +1973,15 @@
                 <td><input class="db-input" type="number" value="${sys.coords[1]}" onchange="updateSys(${index}, 'lng', this.value)"></td>
                 <td><input class="db-input" type="number" value="${sys.coords[0]}" onchange="updateSys(${index}, 'lat', this.value)"></td>
                 <td><select class="db-input" onchange="updateSys(${index}, 'type', this.value)"><option value="major" ${sys.type === 'major' ? 'selected' : ''}>Major</option><option value="minor" ${sys.type === 'minor' ? 'selected' : ''}>Minor</option></select></td>
+                <td>
+                    <select class="db-input" onchange="updateSys(${index}, 'sector', this.value)">
+                        <option value="">None</option>
+                        ${galacticRegionsData.map(r => {
+                            const cleanName = r.name.replace(/<br\s*\/?>/gi, ' ');
+                            return `<option value="${cleanName}" ${sys.sector === cleanName ? 'selected' : ''}>${cleanName}</option>`;
+                        }).join('')}
+                    </select>
+                </td>
                 <td><input class="db-input" value="${sys.desc || ''}" onchange="updateSys(${index}, 'desc', this.value)"></td>
                 <td><input class="db-input" value="${sys.planets ? sys.planets.join(', ') : ''}" onchange="updateSys(${index}, 'planets', this.value)"></td>
                 <td><input class="db-input" list="all-factions" placeholder="Unclaimed" value="${checkVal(sys.history['2238'])}" onchange="updateHistory(${index}, '2238', this.value)"></td>
@@ -2052,7 +2083,7 @@
     function addNewRow() {
         if (currentDbTab === 'systems') {
             systems.push({ 
-                name: "New System", coords: [5000, 5000], type: "minor", desc: "", planets: [], 
+                name: "New System", coords: [5000, 5000], type: "minor", sector: "", desc: "", planets: [], 
                 history: { "2238": "", "2428": "", "2640": "", "2695": "", "2943": "", "2969": "", "3144": "", "3921": "" } 
             });
         } else if (currentDbTab === 'regions') {
@@ -2091,10 +2122,11 @@
             systems.forEach(sys => {
                 const pStr = JSON.stringify(sys.planets || []);
                 const hStr = JSON.stringify(sys.history || {});
-                output += `    { name: "${sys.name}", coords: [${sys.coords[0]}, ${sys.coords[1]}], type: "${sys.type}", desc: "${sys.desc || ''}", planets: ${pStr}, history: ${hStr} },\n`;
+                output += `    { name: "${sys.name}", coords: [${sys.coords[0]}, ${sys.coords[1]}], type: "${sys.type}", sector: "${sys.sector || ''}", desc: "${sys.desc || ''}", planets: ${pStr}, history: ${hStr} },\n`;
             });
             output += "];";
         } else if (currentDbTab === 'regions') {
+            // ... (keep your existing regions export logic here) ...
             output = "const regions = [\n";
             regions.forEach(reg => {
                 const eStr = JSON.stringify(reg.eras);
@@ -2102,6 +2134,7 @@
             });
             output += "];";
         } else {
+            // ... (keep your existing nebulae export logic here) ...
             output = "const nebulae = [\n";
             nebulae.forEach(neb => {
                 const eStr = JSON.stringify(neb.eras);
