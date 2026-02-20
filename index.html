@@ -684,9 +684,20 @@
         "Saventi": { color: "#61aa84" },
         "Sarden": { color: "#254a25" },
         "Preservers": { color: "#a5a5a5" },
-        "Ichizhou": { color: "#1f42a4" },
+        "Ichizhou": { 
+            color: "#1f42a4",
+            names: {
+                "2238": "Ichizhou Empire", 
+                "2428": "Ichizhou Imperial Remnant", 
+                "2640": "Ichizhou Empire",
+                "2695": "Ichizhou Empire",
+                "3144": "Ichizhou Argonate",
+            } 
+        },
         "Solar Empire": { color: "#ad6a22" },
-        "Morden": { color: "#d3d67d" }
+        "Morden": { color: "#d3d67d" },
+        "Tarvathian": { color: "#e6dd50" },
+        "Domedeus Alliance": { color: "#518bcb" },
     };
     const availableFactions = Object.keys(factionData);
     
@@ -787,6 +798,16 @@
         { name: "Aldenaris", coords: [7254, 4020], type: "major", desc: "Hearth of the Vorkai.", planets: ["Vox"], history: {"2238":"Independent","2428":"Independent","2640":"Independent","2695":"Independent","2943":"Solar Empire","2969":"","3144":"","3921":""} },
         { name: "Telyanisk", coords: [7172, 4005], type: "major", desc: "", planets: ["Galloparon"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
         { name: "Novo Abezi", coords: [7054, 3843], type: "major", desc: "", planets: ["Telunu"], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Unclaimed","2695":"Unclaimed","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Jericho", coords: [7109, 6760], type: "major", desc: "Adopted hearth of the Archeri", planets: ["Archer"], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Ordo Ibani", coords: [7034, 6710], type: "major", desc: "", planets: ["Domedia"], history: {"2238":"","2428":"*Domedeus Alliance","2640":"*Domedeus Alliance","2695":"*Domedeus Alliance","2943":"*Domedeus Alliance","2969":"*Domedeus Alliance","3144":"","3921":""} },
+        { name: "Jalin Nigh", coords: [7217, 6688], type: "major", desc: "", planets: [], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Ordo Polis", coords: [6988, 6620], type: "major", desc: "", planets: [], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Din'kalb", coords: [7118, 6830], type: "major", desc: "", planets: [], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Domedeus Alliance","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Adan", coords: [7092, 6506], type: "major", desc: "", planets: [], history: {"2238":"","2428":"Domedeus Alliance","2640":"Domedeus Alliance","2695":"Domedeus Alliance","2943":"Solar Empire","2969":"Domedeus Alliance","3144":"","3921":""} },
+        { name: "Khelathar", coords: [7851, 6042], type: "major", desc: "", planets: ["Tarvath"], history: {"2238":"*Tarvathian","2428":"*Tarvathian","2640":"*Tarvathian","2695":"*Tarvathian","2943":"Solar Empire","2969":"Tarvathian","3144":"","3921":""} },
+        { name: "Sprinkle's Star", coords: [7075, 4412], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Unclaimed","2640":"Equus","2695":"Solar Empire","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "Htash", coords: [7039, 4753], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
+        { name: "32 Hamnoris", coords: [7092, 4803], type: "minor", desc: "", planets: [], history: {"2238":"Unclaimed","2428":"Sarden","2640":"Sarden","2695":"Sarden","2943":"Solar Empire","2969":"","3144":"","3921":""} },
     ];
 
     // Regions
