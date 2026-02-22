@@ -2171,9 +2171,9 @@
             document.getElementById('conflict-description').innerHTML = parseWikiLinks(ev.desc);
             currentDec = dateToDecimal(ev.date);
             
-            if (ev.type === 'summary') {
-                // For a broad yearly summary, zoom out to the epicenter of the conflict
-                map.flyTo(activeConflict.centerCoords, 1, { duration: 1.5 });
+            if (ev.type === 'summary' || ev.type === 'diplomacy') {
+                // For a broad yearly summary or diplomatic event, zoom out to the epicenter of the conflict
+                map.flyTo(activeConflict.centerCoords, 1, { duration: 1 });
                 
             } else if (ev.type === 'movement') {
                 let eventColor = ev.faction ? getFactionColor(ev.faction) : '#ff4444';
@@ -2202,7 +2202,7 @@
                         });
                         L.marker([(lat1+lat2)/2, (lng1+lng2)/2], {icon: arrowIcon, interactive: false}).addTo(conflictLayerGroup);
                     }
-                    map.flyTo(pathCoords[pathCoords.length - 1], 2, { duration: 1.5 });
+                    map.flyTo(pathCoords[pathCoords.length - 1], 2, { duration: 1 });
                 }
                 
             } else if (ev.type === 'multi_movement') {
@@ -2243,7 +2243,7 @@
                 
                 // Fly the camera to the destination of the final fleet in the array
                 if (lastDestinationCoords) {
-                    map.flyTo(lastDestinationCoords, 2, { duration: 1.5 });
+                    map.flyTo(lastDestinationCoords, 2, { duration: 1 });
                 }
 
             } else if (ev.type === 'battle') {
@@ -2269,7 +2269,7 @@
                         iconSize: [40, 40], iconAnchor: [20, 20]
                     });
                     L.marker(battleCoord, {icon: battleIcon}).addTo(conflictLayerGroup);
-                    map.flyTo(battleCoord, 2.5, { duration: 1.5 });
+                    map.flyTo(battleCoord, 2.5, { duration: 1 });
                 }
             }
         }
@@ -2468,6 +2468,30 @@
     }
 
     // --- CONFLICT FUNCTIONS ---
+    let draggedEventIndex = null;
+
+    function dragEventStart(e, idx) {
+        draggedEventIndex = idx;
+        e.dataTransfer.effectAllowed = "move";
+        // This slight opacity change makes it obvious which item you picked up
+        e.target.style.opacity = '0.5'; 
+    }
+
+    function dropEvent(e, dropIdx) {
+        e.preventDefault();
+        e.target.style.opacity = '1';
+        if (draggedEventIndex === null || draggedEventIndex === dropIdx) return;
+        
+        let conf = masterConflictList.find(c => c.id === currentConflictId);
+        if (conf && conf.events) {
+            // Cut the event out of its old position and splice it into the new one
+            const movedEvent = conf.events.splice(draggedEventIndex, 1)[0];
+            conf.events.splice(dropIdx, 0, movedEvent);
+            renderDatabaseTable();
+        }
+        draggedEventIndex = null;
+    }
+
     function renderConflictsTab(container) {
         if (masterConflictList.length === 0) {
             container.innerHTML = '<button class="btn-db" onclick="addNewConflict()">+ Create First Conflict</button>';
@@ -2541,10 +2565,12 @@
                 </div>`;
             }
 
-            return `<div style="background:#111; border:1px solid #333; padding:10px; margin-bottom:15px; border-radius:4px;">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
+            return `<div draggable="true" ondragstart="dragEventStart(event, ${idx})" ondragend="this.style.opacity='1'" ondragover="event.preventDefault()" ondrop="dropEvent(event, ${idx})" style="background:#111; border:1px solid #333; padding:10px; margin-bottom:15px; border-radius:4px; cursor:grab; transition: opacity 0.2s;">
+                <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+                    <span style="color:#555; font-size:18px;" title="Drag to reorder">☰</span>
                     <select class="db-input" style="width:120px;" onchange="changeEventType(${idx}, this.value)">
                         <option value="summary" ${ev.type==='summary'?'selected':''}>Summary</option>
+                        <option value="diplomacy" ${ev.type==='diplomacy'?'selected':''}>Diplomacy</option>
                         <option value="movement" ${ev.type==='movement'?'selected':''}>Movement</option>
                         <option value="multi_movement" ${ev.type==='multi_movement'?'selected':''}>Multi-Movement</option>
                         <option value="battle" ${ev.type==='battle'?'selected':''}>Battle</option>
