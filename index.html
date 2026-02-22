@@ -86,7 +86,7 @@
         .date-grid { display: flex; justify-content: space-between; margin-bottom: 16px; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.8); }
         .date-item { text-align: center; flex: 1; font-family: var(--font-ui); font-size: 16px; line-height: 0.7; }
         .date-item span { font-weight: bold; display: block; margin-bottom: 2px; }
-        .date-item small { font-family: var(--font-body); font-style: italic; font-size: 10px; color: #aaa; text-transform: capitalize; display: block; line-height: 1.2; }
+        .date-item small { font-family: var(--font-body); font-style: italic; font-size: 10px; color: #aaa; display: block; line-height: 1.2; }
         .header-footer-text { font-family: var(--font-body); font-style: italic; font-size: 12px; color: #ccc; line-height: 1.4; max-width: 95%; }
 
         /* --- 3. SEARCH & UI CONTROLS --- */
@@ -296,7 +296,14 @@
 
         /* Conflict Mode Icons */
         .movement-arrow { pointer-events: none; }
-        .battle-icon { pointer-events: none; }
+        .battle-icon { 
+            pointer-events: none; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+        }
+        #map.show-major-icons .battle-icon { 
+            opacity: 1; 
+        }
 
         /* Inner wrappers to protect Leaflet's transform positioning */
         .arrow-inner {
@@ -312,6 +319,36 @@
             0% { transform: scale(1); } 
             50% { transform: scale(1.2); } 
             100% { transform: scale(1); } 
+        }
+        /* Static Conflict Infrastructure */
+        .shipyard-icon { 
+            pointer-events: none; 
+            overflow: visible !important; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+        }
+        #map.show-major-labels .shipyard-icon { 
+            opacity: 1; 
+        }
+        /* Prevent clicking invisible shipyards */
+        #map:not(.show-major-labels) .shipyard-inner { 
+            pointer-events: none !important; 
+        }
+
+        .shipyard-inner {
+            position: absolute;
+            left: 10px;
+            bottom: 10px; /* Pushes the icon above the star */
+            width: 23px;
+            height: 23px;
+            pointer-events: auto; /* Re-enables clicking just for this shape */
+            cursor: pointer;
+            filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.8));
+            transition: transform 0.2s ease;
+        }
+
+        .shipyard-inner:hover {
+            transform: scale(1.15);
         }
 
         /* Editor Mode */
@@ -734,7 +771,7 @@
         <datalist id="all-systems-regions"></datalist>
 
         <div style="flex:1;"></div> <button class="btn-db" onclick="renderDatabaseTable()">🔄 Refresh</button>
-        <button class="btn-db" onclick="addNewRow()">+ Add Item</button>
+        <button id="db-global-add-btn" class="btn-db" onclick="addNewRow()">+ Add Item</button>
         <button class="btn-db btn-export" onclick="exportDatabase()">💾 Export</button>
         <button class="btn-db btn-close" onclick="toggleDatabaseMode()">Close</button>
     </div>
@@ -759,6 +796,7 @@
 
 <script src="conflicts/hydian_rebellion.js"></script>
 <script src="conflicts/human_civil_war.js"></script>
+<script src="conflicts/the_great_war.js"></script>
 
 <script>
     // --- 1. CONFIG & DATA ---
@@ -1076,6 +1114,40 @@
         return `${monthNames[monthIndex]} ${day}, ${year} CE`;
     }
 
+    // Path offset for simultaneous fleet movements
+    function applyPathOffset(coords, offsetAmount) {
+        if (!offsetAmount || offsetAmount === 0 || coords.length < 2) return coords;
+        let offsetCoords = [];
+        
+        for (let i = 0; i < coords.length; i++) {
+            let p1, p2;
+            // Figure out the trajectory of the line segment
+            if (i === 0) {
+                p1 = coords[i]; p2 = coords[i+1];
+            } else if (i === coords.length - 1) {
+                p1 = coords[i-1]; p2 = coords[i];
+            } else {
+                p1 = coords[i-1]; p2 = coords[i+1];
+            }
+            
+            let dLat = p2[0] - p1[0]; 
+            let dLng = p2[1] - p1[1]; 
+            
+            let len = Math.sqrt(dLat * dLat + dLng * dLng);
+            if (len === 0) { offsetCoords.push(coords[i]); continue; }
+            
+            // Calculate the perpendicular angle to push the line sideways
+            let normLat = dLng / len;
+            let normLng = -dLat / len;
+            
+            offsetCoords.push([
+                coords[i][0] + (normLat * offsetAmount),
+                coords[i][1] + (normLng * offsetAmount)
+            ]);
+        }
+        return offsetCoords;
+    }
+
     // Strips the URL and brackets, leaving just the pure text for the search bar
     function stripWikiLinks(text) {
         if (!text) return "";
@@ -1207,6 +1279,7 @@
         if (editorMode) { document.getElementById('zoom-val').innerText = `Zoom: ${zoom.toFixed(2)}`; }
         
         // Toggle label visibility classes
+        zoom >= LOD_MAJOR_ICON ? mapEl.classList.add('show-major-icons') : mapEl.classList.remove('show-major-icons');
         zoom >= LOD_MAJOR_LABEL ? mapEl.classList.add('show-major-labels') : mapEl.classList.remove('show-major-labels');
         zoom >= LOD_MINOR_LABEL ? mapEl.classList.add('show-minor-labels') : mapEl.classList.remove('show-minor-labels');
 
@@ -2010,13 +2083,15 @@
     // --- 7. CONFLICT MODE ---
     const masterConflictList = [
         hydianRebellion,
-        humanCivilWar
+        humanCivilWar,
+        theGreatWar,       
     ];
 
     let isConflictMode = false;
     let activeConflict = null;
     let currentEventIndex = -1; 
     let conflictLayerGroup = L.layerGroup().addTo(map);
+    let conflictStaticLayerGroup = L.layerGroup().addTo(map);
 
     function initConflictSelector() {
         const selector = document.getElementById('conflict-selector');
@@ -2086,12 +2161,52 @@
                 updateMap();
             }
 
+            // Draw the persistent static infrastructure
+            conflictStaticLayerGroup.clearLayers();
+            if (activeConflict.shipyards) {
+                activeConflict.shipyards.forEach(sy => {
+                    let syCoord = null;
+                    if (sy.system) {
+                        let sys = systems.find(s => s.name.toLowerCase() === sy.system.toLowerCase());
+                        if (sys) syCoord = sys.coords;
+                    }
+                    if (syCoord) {
+                        let syColor = sy.faction ? getFactionColor(sy.faction) : '#aaaaaa';
+                        
+                        let syIcon = L.divIcon({
+                            className: 'shipyard-icon',
+                            html: `<div class="shipyard-inner">
+                                <svg viewBox="0 0 30 30" width="100%" height="100%">
+                                    <path d="M5 13 h20 v4 h-20 z" fill="${syColor}" opacity="0.8"/>
+                                    <path d="M13 5 h4 v20 h-4 z" fill="${syColor}" opacity="0.8"/>
+                                    <circle cx="15" cy="15" r="4" fill="#ffffff" />
+                                    <path d="M2 10 h4 v10 h-4 z" fill="${syColor}" />
+                                    <path d="M24 10 h4 v10 h-4 z" fill="${syColor}" />
+                                </svg>
+                            </div>`,
+                            iconSize: [0, 0] 
+                        });
+                        
+                        let popupHtml = `<div style="min-width: 200px;">
+                            <div style="font-size: 16px; font-family: var(--font-ui); font-weight: bold; text-transform: uppercase; color: ${syColor}; margin-bottom: 5px;">${sy.name}</div>
+                            <div style="font-size: 0.85em; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: -2px; border-bottom: 1px solid #444; padding-bottom: 5px;">Controlled by: ${sy.faction || 'Unknown'}</div>
+                            <div style="font-size: 13px; var(--font-body); color: #ccc; line-height: 1.4; margin-top: 5px;">${parseWikiLinks(sy.desc || '')}</div>
+                        </div>`;
+
+                        L.marker(syCoord, {icon: syIcon})
+                         .bindPopup(popupHtml, { className: 'custom-popup', offset: [24, -24] })
+                         .addTo(conflictStaticLayerGroup);
+                    }
+                });
+            }
+
             renderConflictEvent();
 
         } else {
             isConflictMode = false;
             activeConflict = null;
             conflictLayerGroup.clearLayers();
+            conflictStaticLayerGroup.clearLayers(); // Wipe the static bases when exiting
             
             toggleBtn.innerText = "Engage";
             toggleBtn.style.color = "#4facfe";
@@ -2222,11 +2337,14 @@
                         if (pathCoords.length === 0 && fleet.coords) pathCoords = fleet.coords;
                         
                         if (pathCoords.length > 0) {
-                            L.polyline(pathCoords, {color: eventColor, weight: 3, dashArray: '5, 10', opacity: 0.8}).addTo(conflictLayerGroup);
+                            // Push the coordinates sideways based on the database value before drawing
+                            let offsetCoords = applyPathOffset(pathCoords, fleet.offset || 0);
+
+                            L.polyline(offsetCoords, {color: eventColor, weight: 3, dashArray: '5, 10', opacity: 0.8}).addTo(conflictLayerGroup);
                             
-                            for (let i = 0; i < pathCoords.length - 1; i++) {
-                                let lat1 = pathCoords[i][0], lng1 = pathCoords[i][1];
-                                let lat2 = pathCoords[i+1][0], lng2 = pathCoords[i+1][1];
+                            for (let i = 0; i < offsetCoords.length - 1; i++) {
+                                let lat1 = offsetCoords[i][0], lng1 = offsetCoords[i][1];
+                                let lat2 = offsetCoords[i+1][0], lng2 = offsetCoords[i+1][1];
                                 let angle = Math.atan2(-(lat2 - lat1), lng2 - lng1) * (180 / Math.PI);
                                 
                                 let arrowIcon = L.divIcon({
@@ -2236,7 +2354,7 @@
                                 });
                                 L.marker([(lat1+lat2)/2, (lng1+lng2)/2], {icon: arrowIcon, interactive: false}).addTo(conflictLayerGroup);
                             }
-                            lastDestinationCoords = pathCoords[pathCoords.length - 1];
+                            lastDestinationCoords = offsetCoords[offsetCoords.length - 1];
                         }
                     });
                 }
@@ -2504,6 +2622,24 @@
             conf = masterConflictList[0];
         }
 
+        let shipyardsHtml = (conf.shipyards || []).map((sy, idx) => {
+            return `<div style="background:#111; border:1px solid #333; padding:10px; margin-bottom:10px; border-radius:4px;">
+                <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+                    <input class="db-input" style="flex:1;" placeholder="Facility Name" value="${sy.name || ''}" onchange="updateShipyard(${idx}, 'name', this.value)">
+                    <div style="width:150px;">
+                        <input class="db-input" list="all-systems-regions" placeholder="System" value="${sy.system || ''}" onchange="updateShipyard(${idx}, 'system', this.value)">
+                    </div>
+                    <div style="width:150px;">
+                        <input class="db-input" list="all-factions" placeholder="Faction" value="${sy.faction || ''}" onchange="updateShipyard(${idx}, 'faction', this.value)">
+                    </div>
+                    <button style="background:none; border:none; color:red; cursor:pointer;" onclick="removeShipyard(${idx})">✖</button>
+                </div>
+                <div>
+                    <input class="db-input" placeholder="Description" value="${sy.desc || ''}" onchange="updateShipyard(${idx}, 'desc', this.value)">
+                </div>
+            </div>`;
+        }).join('');
+
         let eventsHtml = (conf.events || []).map((ev, idx) => {
             let body = '';
             
@@ -2537,8 +2673,9 @@
                     ).join('');
 
                     return `<div style="background:rgba(0,0,0,0.3); padding:8px; margin-bottom:8px; border-left:2px solid #555;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                            <input class="db-input" list="all-factions" placeholder="Faction" value="${fleet.faction || ''}" onchange="updateFleet(${idx}, ${fIdx}, 'faction', this.value)" style="width:60%;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; gap: 5px;">
+                            <input class="db-input" list="all-factions" placeholder="Faction" value="${fleet.faction || ''}" onchange="updateFleet(${idx}, ${fIdx}, 'faction', this.value)" style="flex: 2;">
+                            <input type="number" class="db-input" placeholder="Offset" title="Parallel shift distance (e.g. 15 or -15)" value="${fleet.offset || 0}" onchange="updateFleet(${idx}, ${fIdx}, 'offset', parseInt(this.value) || 0)" style="flex: 1;">
                             <button style="background:none; border:none; color:red; cursor:pointer;" onclick="removeFleet(${idx}, ${fIdx})">Remove Fleet</button>
                         </div>
                         ${fPathHtml}
@@ -2629,6 +2766,14 @@
                 <label style="color:#0a0; font-size:11px;">Background Summary</label>
                 <textarea class="db-input" rows="3" onchange="updateConflict('desc', this.value)">${conf.desc || ''}</textarea>
             </div>
+
+            <div style="border-top: 1px solid #333; margin-top: 20px; padding-top: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                    <span style="font-family: var(--font-title); font-size: 18px; color: white;">STATIC INFRASTRUCTURE</span>
+                    <button class="btn-db" onclick="addShipyard()">+ Add Facility</button>
+                </div>
+                ${shipyardsHtml}
+            </div>
             
             <div style="border-top: 1px solid #333; margin-top: 20px; padding-top: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
@@ -2638,6 +2783,30 @@
                 ${eventsHtml}
             </div>
         `;
+    }
+
+    function addShipyard() {
+        let conf = masterConflictList.find(c => c.id === currentConflictId);
+        if (conf) {
+            if (!conf.shipyards) conf.shipyards = [];
+            conf.shipyards.push({ name: "New Facility", system: "", faction: "", desc: "" });
+            renderDatabaseTable();
+        }
+    }
+
+    function updateShipyard(idx, field, value) {
+        let conf = masterConflictList.find(c => c.id === currentConflictId);
+        if (conf && conf.shipyards && conf.shipyards[idx]) {
+            conf.shipyards[idx][field] = value;
+        }
+    }
+
+    function removeShipyard(idx) {
+        let conf = masterConflictList.find(c => c.id === currentConflictId);
+        if (conf && conf.shipyards && confirm("Delete this facility?")) {
+            conf.shipyards.splice(idx, 1);
+            renderDatabaseTable();
+        }
     }
 
     function updateConflict(field, value) {
@@ -2680,6 +2849,9 @@
             if (!conf.events) conf.events = [];
             conf.events.push({ type: 'summary', name: 'New Event', date: conf.startDate, desc: '' });
             renderDatabaseTable();
+            
+            const container = document.querySelector('.db-container');
+            if (container) container.scrollTop = container.scrollHeight;
         }
     }
     function removeEvent(idx) {
@@ -2824,11 +2996,14 @@
                 name: "New Region", coords: [5000, 5000], 
                 eras: ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"] 
             });
-        } else {
+        } else if (currentDbTab === 'nebulae') {
             nebulae.push({ 
                 name: "New Nebula", coords: [5000, 5000], 
                 eras: ["2238", "2428", "2640", "2695", "2943", "2969", "3144", "3921"] 
             });
+        } else if (currentDbTab === 'conflicts') {
+            addConflictEvent();
+            return; // Stops the function here since addConflictEvent handles its own rendering
         }
         renderDatabaseTable();
         const container = document.querySelector('.db-container');
@@ -2900,6 +3075,64 @@
 
     // Optional: Also stops the map from zooming if you scroll while hovering over the widget
     L.DomEvent.disableScrollPropagation(document.getElementById('editor-info'));
+
+    // Global text formatting shortcuts for database inputs
+    document.addEventListener('keydown', function(e) {
+        const target = e.target;
+        const isTextInput = (target.tagName === 'INPUT' && target.type === 'text') || target.tagName === 'TEXTAREA';
+        
+        // We only want these shortcuts to run if you are actively typing in a text field
+        if (!isTextInput) return;
+
+        // Check if Ctrl (or Cmd on Mac) is being held down
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                applyTextFormatting(target, 'b');
+            } else if (e.key.toLowerCase() === 'i') {
+                e.preventDefault();
+                applyTextFormatting(target, 'i');
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                applyTextFormatting(target, 'br');
+            }
+        }
+    });
+
+    function applyTextFormatting(target, tag) {
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        const value = target.value;
+        const selectedText = value.substring(start, end);
+        
+        let newText = '';
+        let newCursorPos = start;
+
+        if (tag === 'br') {
+            // A line break just drops the tag at the cursor and moves on
+            newText = value.substring(0, start) + '<br>' + value.substring(end);
+            newCursorPos = start + 4; 
+        } else {
+            // Bold and italics wrap the highlighted text, or just drop empty tags if nothing is highlighted
+            const openTag = `<${tag}>`;
+            const closeTag = `</${tag}>`;
+            newText = value.substring(0, start) + openTag + selectedText + closeTag + value.substring(end);
+            
+            if (start === end) {
+                // Plop the cursor right between the tags so you can keep typing
+                newCursorPos = start + openTag.length;
+            } else {
+                // Move the cursor to the end of the newly wrapped word
+                newCursorPos = start + openTag.length + selectedText.length + closeTag.length;
+            }
+        }
+
+        target.value = newText;
+        target.setSelectionRange(newCursorPos, newCursorPos);
+        
+        // This forces the database to notice the change and save the array
+        target.dispatchEvent(new Event('change', { bubbles: true }));
+    }
 
     let activeDragModal = null;
     let modalDragStartX = 0, modalDragStartY = 0;

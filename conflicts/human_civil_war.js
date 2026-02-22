@@ -8,8 +8,19 @@ const humanCivilWar = {
     ],
     "startDate": "2251.04.15",
     "endDate": "2264.08.02",
-    "participants": [],
+    "participants": [
+        "United Systems",
+        "Independent"
+    ],
     "desc": "In the aftermath of the <b>Dalton City Massacre</b> on Coriter - and fueled by years of political disagreements, wealth inequality, and years of low-level insurgency - the system government of Procyon declared it's intent to secede from the <b>United Systems</b>. Procyon would soon be followed by the rest of the Periphery, including the principal systems of Ran and Keid.<br><br>Together, the <b>Peripheral Systems</b> rose in revolt against the core worlds of humanity. Sol, Alpha Centauri, and Tau Ceti formed to core of the United System's response against the Peripheral Systems, later being joined by Epsilon Indi.",
+    shipyards: [
+        {
+            name: "Argye Planitia Yards",
+            system: "Sol",
+            faction: "United Systems",
+            desc: "Located in synchronous orbit above <b>[Mars](https://www.worldanvil.com/w/laundry-s-sci-fi-thelaundry/a/mars-location)</b> (Sol IV), the Argye Planitia Yards are the largest shipyards built by humanity up to this point. The central location between the mineral rich Sol asteroid belt and populated hubs of Earth and its Moon make Mars an ideal spot for heavy industry of all kinds."
+        }
+    ],    
     "events": [
         {
             "type": "summary",
@@ -101,7 +112,7 @@ const humanCivilWar = {
             "type": "diplomacy",
             "name": "The Fomalhaut Declaration",
             "date": "2264.08.02",
-            "desc": "The surviving members of the respective governments of the core worlds and the periphery sign a joint resolution on Humanity's last major colony, Skagmore. The Fomalhault Declaration officially ended the brutal civil war that brought Humankind to the edge of extinction."
+            "desc": "The surviving members of the respective governments of the core worlds and the periphery signed a joint resolution on Humanity's last remaining major colony, Skagmore. The Fomalhault Declaration officially ends the brutal civil war that brought Humankind to the edge of extinction."
         }
     ]
 };
