@@ -12,7 +12,7 @@ const hydianRebellion = {
         "United Systems",
         "Independent"
     ],
-    "desc": "Following a decade of heavy taxation by the central government, the outer colony worlds formed a unified front. What began as trade embargoes quickly escalated into an armed insurgency across the hydian reaches, marking the first major civil conflict in over a century.",
+    "desc": "This is a test conflict. NON-CANON.",
     "events": [
         {
             "type": "movement",
