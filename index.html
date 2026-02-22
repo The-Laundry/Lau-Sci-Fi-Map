@@ -376,6 +376,35 @@
         }
         .db-input:focus { background: #000; color: #fff; box-shadow: inset 0 0 0 1px #4facfe; }
 
+        /* Database Validator Styles */
+        #db-error-banner {
+            display: none; 
+            background: rgba(200, 0, 0, 0.15); 
+            border: 1px solid #ff4444; 
+            color: #ff8888; 
+            padding: 10px 15px; 
+            margin-bottom: 15px; 
+            border-radius: 4px;
+            font-family: var(--font-ui); 
+            font-size: 13px; 
+            align-items: center; 
+            gap: 10px;
+        }
+
+        #db-error-banner.show {
+            display: flex;
+        }
+
+        /* Red tint for rows missing data */
+        .db-table tr.row-error td {
+            background: rgba(200, 0, 0, 0.2); 
+            border-bottom: 1px solid #ff4444;
+        }
+
+        .db-table tr.row-error:hover td {
+            background: rgba(200, 0, 0, 0.35);
+        }
+
         /* Column Widths */
         .col-tiny { width: 50px; text-align: center; }
         .col-small { width: 80px; }
@@ -654,6 +683,10 @@
         <button class="btn-db btn-close" onclick="toggleDatabaseMode()">Close</button>
     </div>
     
+    <div id="db-error-banner">
+        ⚠️ <strong>Missing Sector Data:</strong> <span id="db-error-list"></span>
+    </div>
+    
     <div class="db-container">
         <table class="db-table" id="db-table">
             <thead id="db-head">
@@ -914,6 +947,28 @@
     }
 
     function goHome() { map.flyTo([5000, 5000], 0, { duration: 1.5 }); }
+    
+    let tempPlacementMarker = null;
+
+    function createTempMarker(latlng) {
+        clearTempMarker();
+        tempPlacementMarker = L.circleMarker(latlng, {
+            radius: 5, 
+            color: '#ff0000', 
+            weight: 2, 
+            fillColor: '#ff0000', 
+            fillOpacity: 1, 
+            zIndexOffset: 1000, 
+            interactive: false
+        }).addTo(map);
+    }
+
+    function clearTempMarker() {
+        if (tempPlacementMarker) {
+            map.removeLayer(tempPlacementMarker);
+            tempPlacementMarker = null;
+        }
+    }
 
     // Converts [Text](URL) into a clickable HTML link
     function parseWikiLinks(text) {
@@ -1615,8 +1670,19 @@
         document.getElementById('creator-modal').style.display = 'block';
         document.getElementById('input-name').focus();
         map.dragging.disable();
+        createTempMarker(ll);
     }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; map.dragging.enable(); }
+    function closeModal(id) { 
+        const modal = document.getElementById(id);
+        modal.style.display = 'none'; 
+        
+        // Reset position so it doesn't open off-screen next time
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+        
+        map.dragging.enable(); 
+        clearTempMarker();
+    }
     function saveSystemToDatabase() {
         const name = document.getElementById('input-name').value || "Unknown System";
         const desc = document.getElementById('input-desc').value || "";
@@ -1668,6 +1734,7 @@
 
         document.getElementById('creator-modal').style.display = 'block';
         map.dragging.disable();
+        createTempMarker(sys.coords);
         showToast(`Editing ${sys.name}`);
     }
 
@@ -1679,6 +1746,7 @@
         // Focus the name input
         document.getElementById('reg-name').focus();
         map.dragging.disable();
+        createTempMarker(ll);
     }
 
     function generateRegionCode() {
@@ -1707,6 +1775,7 @@
         document.getElementById('nebula-modal').style.display = 'block';
         document.getElementById('neb-name').focus();
         map.dragging.disable();
+        createTempMarker(ll);
     }
 
     function generateNebulaCode() {
@@ -1898,15 +1967,25 @@
     function renderSystemsTable(thead, tbody) {
         thead.innerHTML = `<tr><th class="col-med">Name</th><th class="col-tiny">X</th><th class="col-tiny">Y</th><th class="col-small">Type</th><th class="col-small">Sector</th><th class="col-wide">Description</th><th class="col-wide">Planets</th><th class="col-med">2238 Owner</th><th class="col-med">2428 Owner</th><th class="col-med">2640 Owner</th><th class="col-med">2695 Owner</th><th class="col-med">2943 Owner</th><th class="col-med">2969 Owner</th><th class="col-med">3144 Owner</th><th class="col-med">3921 Owner</th><th class="col-tiny">Actions</th></tr>`;
         const checkVal = (val) => (val === 'Unclaimed' || !val) ? '' : val;
+        
+        let missingSectors = [];
+
         systems.forEach((sys, index) => {
+            const isMissingSector = !sys.sector || sys.sector.trim() === "";
+            if (isMissingSector) {
+                missingSectors.push(sys.name);
+            }
+
             const row = document.createElement('tr');
+            if (isMissingSector) row.classList.add('row-error');
+
             row.innerHTML = `
                 <td><input class="db-input" value="${sys.name}" onchange="updateSys(${index}, 'name', this.value)"></td>
                 <td><input class="db-input" type="number" value="${sys.coords[1]}" onchange="updateSys(${index}, 'lng', this.value)"></td>
                 <td><input class="db-input" type="number" value="${sys.coords[0]}" onchange="updateSys(${index}, 'lat', this.value)"></td>
                 <td><select class="db-input" onchange="updateSys(${index}, 'type', this.value)"><option value="major" ${sys.type === 'major' ? 'selected' : ''}>Major</option><option value="minor" ${sys.type === 'minor' ? 'selected' : ''}>Minor</option></select></td>
                 <td>
-                    <select class="db-input" onchange="updateSys(${index}, 'sector', this.value)">
+                    <select class="db-input" onchange="updateSys(${index}, 'sector', this.value); renderDatabaseTable();">
                         <option value="">None</option>
                         ${galacticRegionsData.map(r => {
                             const cleanName = r.name.replace(/<br\s*\/?>/gi, ' ');
@@ -1927,9 +2006,12 @@
                 <td style="text-align:center;"><button style="color:red; background:none; border:none; cursor:pointer;" onclick="deleteRow(${index})">✖</button></td>`;
             tbody.appendChild(row);
         });
+
+        updateValidatorBanner(missingSectors);
     }
 
     function renderRegionsTable(thead, tbody) {
+        updateValidatorBanner([]);
         thead.innerHTML = `<tr><th class="col-wide">Region Name</th><th class="col-tiny">X</th><th class="col-tiny">Y</th><th class="col-small">2238</th><th class="col-small">2428</th><th class="col-small">2640</th><th class="col-small">2695</th><th class="col-small">2943</th><th class="col-small">2969</th><th class="col-small">3144</th><th class="col-small">3921</th><th class="col-tiny">Actions</th></tr>`;
         regions.forEach((reg, index) => {
             const row = document.createElement('tr');
@@ -1952,6 +2034,7 @@
     }
 
     function renderNebulaeTable(thead, tbody) {
+        updateValidatorBanner([]);
         thead.innerHTML = `<tr><th class="col-wide">Nebula Name</th><th class="col-tiny">X</th><th class="col-tiny">Y</th><th class="col-small">2238</th><th class="col-small">2428</th><th class="col-small">2640</th><th class="col-small">2695</th><th class="col-small">2943</th><th class="col-small">2969</th><th class="col-small">3144</th><th class="col-small">3921</th><th class="col-tiny">Actions</th></tr>`;
         nebulae.forEach((neb, index) => {
             const row = document.createElement('tr');
@@ -2009,6 +2092,20 @@
         const eraList = nebulae[index].eras;
         if (isChecked) { if (!eraList.includes(era)) eraList.push(era); } 
         else { const i = eraList.indexOf(era); if (i > -1) eraList.splice(i, 1); }
+    }
+
+    function updateValidatorBanner(missingList) {
+        const banner = document.getElementById('db-error-banner');
+        const listSpan = document.getElementById('db-error-list');
+        
+        if (!banner || !listSpan) return;
+
+        if (currentDbTab === 'systems' && missingList.length > 0) {
+            listSpan.innerText = missingList.join(', ');
+            banner.classList.add('show');
+        } else {
+            banner.classList.remove('show');
+        }
     }
 
     // --- SHARED ACTIONS (Initialize with 8 eras) ---
@@ -2085,6 +2182,42 @@
 
     // Optional: Also stops the map from zooming if you scroll while hovering over the widget
     L.DomEvent.disableScrollPropagation(document.getElementById('editor-info'));
+
+    let activeDragModal = null;
+    let modalDragStartX = 0, modalDragStartY = 0;
+    let modalStartLeft = 0, modalStartTop = 0;
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('mousedown', (e) => {
+            // Ignore the drag action if you are clicking an input, select, textarea, or button
+            if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(e.target.tagName)) return;
+            
+            activeDragModal = modal;
+            modalDragStartX = e.clientX;
+            modalDragStartY = e.clientY;
+            
+            // Calculate the current visual position
+            const style = window.getComputedStyle(modal);
+            modalStartLeft = parseInt(style.left) || window.innerWidth / 2;
+            modalStartTop = parseInt(style.top) || window.innerHeight / 2;
+        });
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!activeDragModal) return;
+        
+        // Calculate how far the mouse has moved
+        const dx = e.clientX - modalDragStartX;
+        const dy = e.clientY - modalDragStartY;
+        
+        // Apply that movement to the modal
+        activeDragModal.style.left = (modalStartLeft + dx) + 'px';
+        activeDragModal.style.top = (modalStartTop + dy) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        activeDragModal = null;
+    });
 </script>
 </body>
 </html>
